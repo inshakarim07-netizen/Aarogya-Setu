@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Dashboard | Aarogya-Setu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css"/>
+  <style>
+    .wrap{max-width:1000px;margin:0 auto}
+    .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:16px}
+    .pill{display:inline-block;background:var(--pink-100);border:1px solid var(--pink-200);padding:6px 10px;border-radius:999px;font-weight:700;color:var(--pink-600)}
+    .panel{background:#fff;border:1px solid var(--pink-200);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}
+    @media (max-width:900px){ .cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media (max-width:620px){ .cards{grid-template-columns:1fr}}
+    .back{display:inline-flex;gap:8px;text-decoration:none;color:var(--pink-600);font-weight:700}
+  </style>
+</head>
+<body>
+<main class="container wrap">
+  <div class="topnav">
+    <a class="brand-mini" href="index.html">Aarogya-Setu</a>
+    <nav>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="patient-profile-details.html">Profile</a>
+      <a href="doctor-profile.html">Doctor Profile</a>
+      <a href="upload-records.html">Upload</a>
+      <a href="records-category.html">Records</a>
+      <a href="ai-chat.html">AI Chat</a>
+      <a href="booking.html">Booking</a>
+    </nav>
+  </div>
+  <a class="back" href="index.html">← Home</a>
+  <h1 class="brand">Dashboard</h1>
+  <p class="tagline">Quick view of activity</p>
+
+  <div class="cards">
+    <div class="panel"><span class="pill">Today</span><h3>Appointments</h3><p>2 upcoming</p></div>
+    <div class="panel"><span class="pill">New</span><h3>Records Added</h3><p>3 this week</p></div>
+    <div class="panel"><span class="pill">Alerts</span><h3>Reminders</h3><p>1 pending</p></div>
+  </div>
+</main>
+</body>
+</html>

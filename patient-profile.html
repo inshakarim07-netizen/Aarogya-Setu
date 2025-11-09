@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Patient Profile | Aarogya-Setu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css"/>
+  <style>
+    .wrap{max-width:900px;margin:0 auto}
+    .form{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    label{font-size:13px;color:var(--muted)}
+    input,select,textarea{width:100%;padding:12px;border:1px solid var(--pink-200);border-radius:12px;background:var(--pink-50);font:inherit}
+    .full{grid-column:1/-1}
+    .panel{background:#fff;border:1px solid var(--pink-200);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+    .back{display:inline-flex;gap:8px;text-decoration:none;color:var(--pink-600);font-weight:700}
+    .btn{border:0;border-radius:12px;padding:12px 16px;font-weight:700;cursor:pointer}
+    .primary{background:var(--pink-500);color:#fff}
+    @media (max-width:620px){ .form{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+<main class="container wrap">
+  <div class="topnav">
+    <a class="brand-mini" href="index.html">Aarogya-Setu</a>
+    <nav>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="patient-profile-details.html">Profile</a>
+      <a href="upload-records.html">Upload</a>
+      <a href="records-category.html">Records</a>
+      <a href="ai-chat.html">AI Chat</a>
+      <a href="booking.html">Booking</a>
+    </nav>
+  </div>
+  <a class="back" href="index.html">← Home</a>
+  <h1 class="brand">Patient Profile</h1>
+  <p class="tagline">Edit your details</p>
+
+  <div class="panel">
+    <form class="form" onsubmit="saveProfile(event)">
+      <div class="full">
+        <label>Full Name
+          <input name="name" required placeholder="Asha Devi"/>
+        </label>
+      </div>
+      <div>
+        <label>Email
+          <input type="email" name="email" required placeholder="asha@example.com"/>
+        </label>
+      </div>
+      <div>
+        <label>Phone
+          <input type="tel" name="phone" required placeholder="+91 9xxxxxxxxx"/>
+        </label>
+      </div>
+      <div>
+        <label>Age
+          <input type="number" min="0" name="age" placeholder="32"/>
+        </label>
+      </div>
+      <div>
+        <label>Blood Group
+          <select name="blood"><option value="">Select</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option></select>
+        </label>
+      </div>
+      <div class="full">
+        <label>Allergies
+          <textarea name="allergies" rows="3" placeholder="Penicillin, peanuts, etc."></textarea>
+        </label>
+      </div>
+      <div class="full">
+        <button class="btn primary" type="submit">Save</button>
+      </div>
+    </form>
+  </div>
+</main>
+
+<script>
+  // Load demo data if available
+  const p = JSON.parse(localStorage.getItem('patientProfile') || '{}');
+  for (const k in p){ const el=document.querySelector(`[name="${k}"]`); if(el) el.value=p[k]; }
+
+  function saveProfile(e){
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target).entries());
+    localStorage.setItem('patientProfile', JSON.stringify({...p, ...data}));
+    alert('Profile saved (demo).');
+  }
+</script>
+</body>
+</html>

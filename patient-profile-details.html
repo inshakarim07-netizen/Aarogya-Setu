@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Patient Profile | Details</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css"/>
+  <style>
+    .wrap{max-width:1100px;margin:0 auto}
+    .back{display:inline-flex;gap:8px;text-decoration:none;color:var(--pink-600);font-weight:700}
+    .section{margin-top:18px}
+    .panel{background:#fff;border:1px solid var(--pink-200);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+
+    /* Vitals */
+    .vitals{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+    .vital{background:var(--pink-50);border:1px solid var(--pink-200);border-radius:14px;padding:14px}
+    .vital h4{margin:0 0 6px;font-size:14px;color:var(--muted)}
+    .vital .val{font-size:22px;font-weight:800;color:var(--pink-600)}
+    .vital small{color:var(--muted)}
+    .vital-form{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:12px}
+    .vital-form input{padding:10px;border:1px solid var(--pink-200);border-radius:12px;background:var(--pink-50)}
+    .btn{border:0;border-radius:12px;padding:12px 16px;font-weight:700;cursor:pointer}
+    .primary{background:var(--pink-500);color:#fff}
+    .ghost{background:#fff;border:1px solid var(--pink-200);color:var(--pink-600)}
+
+    /* Upload areas */
+    .grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+    .uploader label{font-size:13px;color:var(--muted)}
+    .uploader input,.uploader textarea,.uploader select{
+      width:100%;padding:12px;border:1px solid var(--pink-200);border-radius:12px;background:var(--pink-50);font:inherit
+    }
+    .uploader .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .list{margin-top:12px}
+    .item{
+      display:flex;justify-content:space-between;align-items:center;
+      background:#fff;border:1px solid var(--pink-200);border-radius:12px;padding:10px 12px;margin-bottom:8px
+    }
+    .item a{color:inherit;text-decoration:none}
+    .item small{color:var(--muted)}
+    .section h3{margin:0 0 10px}
+    @media (max-width:1020px){ .vitals{grid-template-columns:repeat(2,minmax(0,1fr))} .grid3{grid-template-columns:1fr} .vital-form{grid-template-columns:repeat(2,1fr)} }
+    @media (max-width:620px){ .vital-form{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+<main class="container wrap">
+  <div class="topnav">
+    <a class="brand-mini" href="index.html">Aarogya-Setu</a>
+    <nav>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="patient-profile-details.html">Profile</a>
+      <a href="upload-records.html">Upload</a>
+      <a href="records-category.html">Records</a>
+      <a href="ai-chat.html">AI Chat</a>
+      <a href="booking.html">Booking</a>
+    </nav>
+  </div>
+  <a class="back" href="index.html">← Home</a>
+  <h1 class="brand">Patient Profile</h1>
+  <p class="tagline">Vitals, history, prescriptions, and lab reports</p>
+
+  <!-- VITALS -->
+  <section class="section panel">
+    <h3>Latest Vitals</h3>
+    <div class="vitals" id="vitalCards">
+      <div class="vital"><h4>Blood Pressure</h4><div class="val" id="bpVal">—</div><small id="bpTime">No data</small></div>
+      <div class="vital"><h4>Heart Rate</h4><div class="val" id="hrVal">—</div><small id="hrTime">No data</small></div>
+      <div class="vital"><h4>Temperature</h4><div class="val" id="tempVal">—</div><small id="tempTime">No data</small></div>
+      <div class="vital"><h4>Weight</h4><div class="val" id="wtVal">—</div><small id="wtTime">No data</small></div>
+    </div>
+
+    <form class="vital-form" onsubmit="saveVitals(event)">
+      <input id="bp" placeholder="BP e.g., 120/80 mmHg"/>
+      <input id="hr" placeholder="HR bpm e.g., 78"/>
+      <input id="temp" placeholder="Temp °C e.g., 36.8"/>
+      <input id="wt" placeholder="Weight kg e.g., 62"/>
+      <button class="btn primary" type="submit">Update Vitals</button>
+    </form>
+  </section>
+
+  <!-- THREE COLUMNS: History, Prescriptions, Lab Reports -->
+  <section class="section grid3">
+    <!-- MEDICAL HISTORY -->
+    <div class="panel">
+      <h3>Medical History</h3>
+      <form class="uploader" onsubmit="addItem(event,'history')">
+        <div class="row">
+          <input name="title" required placeholder="Title e.g., Diabetes since 2018"/>
+          <input type="date" name="date" required/>
+        </div>
+        <textarea name="notes" rows="3" placeholder="Notes (optional)"></textarea>
+        <div class="row">
+          <input type="file" name="file" accept=".pdf,.jpg,.jpeg,.png"/>
+          <button class="btn primary" type="submit">Add</button>
+        </div>
+      </form>
+      <div id="historyList" class="list"></div>
+    </div>
+
+    <!-- PRESCRIPTIONS -->
+    <div class="panel">
+      <h3>Prescriptions</h3>
+      <form class="uploader" onsubmit="addItem(event,'prescriptions')">
+        <div class="row">
+          <input name="title" required placeholder="Prescription title"/>
+          <input type="date" name="date" required/>
+        </div>
+        <textarea name="notes" rows="3" placeholder="Drug list, dosage..."></textarea>
+        <div class="row">
+          <input type="file" name="file" accept=".pdf,.jpg,.jpeg,.png" required/>
+          <button class="btn primary" type="submit">Upload</button>
+        </div>
+      </form>
+      <div id="prescriptionsList" class="list"></div>
+    </div>
+
+    <!-- LAB REPORTS -->
+    <div class="panel">
+      <h3>Lab Reports</h3>
+      <form class="uploader" onsubmit="addItem(event,'labs')">
+        <div class="row">
+          <input name="title" required placeholder="Report title e.g., CBC"/>
+          <input type="date" name="date" required/>
+        </div>
+        <textarea name="notes" rows="3" placeholder="Key results..."></textarea>
+        <div class="row">
+          <input type="file" name="file" accept=".pdf,.jpg,.jpeg,.png" required/>
+          <button class="btn primary" type="submit">Upload</button>
+        </div>
+      </form>
+      <div id="labsList" class="list"></div>
+    </div>
+  </section>
+</main>
+
+<script>
+  // ---------- LocalStorage keys ----------
+  const KEYS = {
+    vitals: 'vitals',
+    history: 'history',
+    prescriptions: 'prescriptions',
+    labs: 'labs'
+  };
+
+  // ---------- VITALS ----------
+  function loadVitals(){
+    const v = JSON.parse(localStorage.getItem(KEYS.vitals) || '{}');
+    setVital('bpVal','bpTime', v.bp);
+    setVital('hrVal','hrTime', v.hr);
+    setVital('tempVal','tempTime', v.temp);
+    setVital('wtVal','wtTime', v.wt);
+  }
+  function setVital(valId, timeId, obj){
+    const valEl = document.getElementById(valId);
+    const timeEl = document.getElementById(timeId);
+    if(obj && obj.value){
+      valEl.textContent = obj.value;
+      timeEl.textContent = new Date(obj.at).toLocaleString();
+    }else{
+      valEl.textContent = '—';
+      timeEl.textContent = 'No data';
+    }
+  }
+  function saveVitals(e){
+    e.preventDefault();
+    const now = Date.now();
+    const data = {
+      bp:   document.getElementById('bp').value ? {value: document.getElementById('bp').value, at: now} : JSON.parse(localStorage.getItem(KEYS.vitals) || '{}').bp,
+      hr:   document.getElementById('hr').value ? {value: document.getElementById('hr').value, at: now} : JSON.parse(localStorage.getItem(KEYS.vitals) || '{}').hr,
+      temp: document.getElementById('temp').value ? {value: document.getElementById('temp').value, at: now} : JSON.parse(localStorage.getItem(KEYS.vitals) || '{}').temp,
+      wt:   document.getElementById('wt').value ? {value: document.getElementById('wt').value, at: now} : JSON.parse(localStorage.getItem(KEYS.vitals) || '{}').wt
+    };
+    localStorage.setItem(KEYS.vitals, JSON.stringify(data));
+    loadVitals();
+    e.target.reset();
+    alert('Vitals updated (demo).');
+  }
+
+  // ---------- RECORDS (History / Prescriptions / Labs) ----------
+  const state = {
+    history: JSON.parse(localStorage.getItem(KEYS.history) || '[]'),
+    prescriptions: JSON.parse(localStorage.getItem(KEYS.prescriptions) || '[]'),
+    labs: JSON.parse(localStorage.getItem(KEYS.labs) || '[]')
+  };
+
+  function addItem(e, bucket){
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const file = fd.get('file');
+    const entry = {
+      id: Date.now(),
+      title: fd.get('title'),
+      date: fd.get('date'),
+      notes: fd.get('notes') || '',
+      fileName: file && file.name ? file.name : '',
+      fileType: file && file.type ? file.type : '',
+      fileData: null // will be set if file present
+    };
+
+    const proceed = () => {
+      state[bucket].unshift(entry);
+      localStorage.setItem(KEYS[bucket], JSON.stringify(state[bucket]));
+      renderLists();
+      e.target.reset();
+      alert('Saved (demo).');
+    };
+
+    if(file && file.size){
+      const reader = new FileReader();
+      reader.onload = () => { entry.fileData = reader.result; proceed(); };
+      reader.readAsDataURL(file);
+    } else {
+      proceed();
+    }
+  }
+
+  function removeItem(bucket, id){
+    const idx = state[bucket].findIndex(r => r.id === id);
+    if(idx > -1){
+      state[bucket].splice(idx,1);
+      localStorage.setItem(KEYS[bucket], JSON.stringify(state[bucket]));
+      renderLists();
+    }
+  }
+
+  function itemRow(bucket, r){
+    const url = `record-view.html?bucket=${encodeURIComponent(bucket)}&id=${encodeURIComponent(r.id)}`;
+    return `
+      <div class="item">
+        <div>
+          <a href="${url}" title="Open">
+            <strong>${r.title}</strong>
+          </a>
+          <div><small>${r.date || 'N/A'}</small></div>
+          ${r.notes ? `<div><small>${r.notes}</small></div>` : ''}
+          ${r.fileName ? `<div><small>File: ${r.fileName}</small></div>` : ''}
+        </div>
+        <button class="btn ghost" onclick="removeItem('${bucket}', ${r.id})">Delete</button>
+      </div>
+    `;
+  }
+
+  function renderLists(){
+    const buckets = ['history','prescriptions','labs'];
+    buckets.forEach(b => {
+      const listEl = document.getElementById(b + 'List');
+      const arr = state[b];
+      if(!arr.length){
+        listEl.innerHTML = '<p class="tagline">No items yet.</p>';
+      }else{
+        listEl.innerHTML = arr.map(r => itemRow(b, r)).join('');
+      }
+    });
+  }
+
+  // init
+  loadVitals();
+  renderLists();
+</script>
+</body>
+</html>

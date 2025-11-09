@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Voice Assistant Booking</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--pink50:#fff5f8;--pink100:#ffe5ee;--pink200:#ffc9db;--pink500:#ff4d88;--pink600:#e23e78;--radius:18px}
+  *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color:#1c1c1c;
+  background:radial-gradient(1000px 520px at 110% -10%,#ffe5ee,transparent 60%),var(--pink50)}
+  .wrap{max-width:960px;margin:0 auto;padding:22px;min-height:100dvh;display:grid;gap:18px}
+  .brand{color:var(--pink600);font-size:clamp(26px,4vw,38px);margin:0}
+  .card{background:linear-gradient(180deg,#fff,var(--pink50));border:1px solid var(--pink200);border-radius:var(--radius);box-shadow:0 12px 32px rgba(255,105,135,.25)}
+  .pad{padding:18px}
+  .assistant{display:flex;flex-direction:column;height:68vh}
+  .log{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:linear-gradient(180deg,var(--pink50),#fff)}
+  .msg{max-width:80%;padding:10px 12px;border-radius:14px;border:1px solid var(--pink200);background:#fff}
+  .bot{align-self:flex-start} .user{align-self:flex-end;background:var(--pink100)}
+  .controls{display:flex;gap:10px;padding:12px;border-top:1px solid var(--pink200)}
+  .btn{border:0;border-radius:12px;padding:12px 16px;font-weight:700;cursor:pointer}
+  .primary{background:var(--pink500);color:#fff} .ghost{background:#fff;border:1px solid var(--pink200);color:var(--pink600)}
+  .led{width:10px;height:10px;border-radius:999px;background:#aaa;margin-left:6px}
+  .live{background:#ff4060;box-shadow:0 0 0 3px rgba(255,64,96,.25)}
+  .summary{background:#e9fcec;border:1px solid #b7f0c0;color:#1c4d2a;border-radius:12px;padding:12px;margin-top:10px}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1 class="brand" id="title">Voice Assistant Booking</h1>
+  <p id="hint"></p>
+
+  <section class="card assistant">
+    <div id="log" class="log" aria-live="polite"></div>
+    <div class="controls">
+      <button id="startBtn" class="btn primary" type="button">🎙️ Start</button>
+      <button id="stopBtn" class="btn ghost" type="button" disabled>■ Stop</button>
+      <div style="display:flex;align-items:center;gap:8px"><span id="micText">Mic off</span><div id="led" class="led"></div></div>
+    </div>
+  </section>
+
+  <section class="card pad" id="resultCard" hidden>
+    <h3 id="resultTitle">Appointment booked</h3>
+    <div class="summary" id="summary"></div>
+  </section>
+</main>
+
+<script>
+/* ---------- language handling ---------- */
+const params = new URLSearchParams(location.search);
+const lang = params.get('lang') === 'hi' ? 'hi' : 'en';
+
+const STR = {
+  en: {
+    title: "Voice Assistant Booking",
+    intro: "I will ask a few questions to book your appointment.",
+    askProblem: "What problem do you have?",
+    askSymptoms: "Please tell me your symptoms.",
+    askDuration: "For how long have you had these symptoms?",
+    askDoctor: "Which doctor or department do you want to see?",
+    askDateTime: "When do you want to book the appointment? Say the exact date and time.",
+    confirm: (d)=> `Your appointment is booked with ${d.doctor} on ${d.date} at ${d.time}.`,
+    booked: "Appointment booked (demo).",
+    micOff: "Mic off", listening: "Listening…"
+  },
+  hi: {
+    title: "वॉइस असिस्टेंट बुकिंग",
+    intro: "मैं कुछ सवाल पूछूंगा और आपकी अपॉइंटमेंट बुक करूंगा।",
+    askProblem: "आपको क्या समस्या है?",
+    askSymptoms: "लक्षण बताइए।",
+    askDuration: "ये लक्षण कब से हैं?",
+    askDoctor: "किस डॉक्टर या विभाग से मिलना है?",
+    askDateTime: "किस दिन और किस समय अपॉइंटमेंट चाहिए? तारीख और समय बताइए।",
+    confirm: (d)=> `आपकी अपॉइंटमेंट ${d.doctor} के साथ ${d.date} को, ${d.time} बजे बुक हो गई है।`,
+    booked: "अपॉइंटमेंट बुक हो गई (डेमो)।",
+    micOff: "माइक बंद", listening: "सुन रहा हूँ…"
+  }
+}[lang];
+
+document.getElementById('title').textContent = STR.title;
+document.getElementById('hint').textContent = STR.intro;
+
+/* ---------- UI helpers ---------- */
+const $ = s => document.querySelector(s);
+function append(role, text){
+  const d = document.createElement('div');
+  d.className = `msg ${role}`;
+  d.textContent = text;
+  $('#log').appendChild(d);
+  $('#log').scrollTop = $('#log').scrollHeight;
+}
+function speak(text){
+  if(!('speechSynthesis' in window)) return;
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = lang === 'hi' ? 'hi-IN' : 'en-IN';
+  speechSynthesis.cancel();
+  speechSynthesis.speak(u);
+}
+
+/* ---------- conversation flow ---------- */
+const form = { problem:'', symptoms:'', duration:'', doctor:'', date:'', time:'' };
+const steps = [
+  {key:'problem',  q: STR.askProblem},
+  {key:'symptoms', q: STR.askSymptoms},
+  {key:'duration', q: STR.askDuration},
+  {key:'doctor',   q: STR.askDoctor},
+  {key:'datetime', q: STR.askDateTime}
+];
+let stepIndex = 0;
+
+function askNext(){
+  if(stepIndex >= steps.length){
+    confirmBooking();
+    return;
+  }
+  const q = steps[stepIndex];
+  append('bot', q.q);
+  speak(q.q);
+}
+
+function handleUser(text){
+  append('user', text);
+
+  if(stepIndex === 0){ form.problem  = text; }
+  else if(stepIndex === 1){ form.symptoms = text; }
+  else if(stepIndex === 2){ form.duration = text; }
+  else if(stepIndex === 3){ form.doctor   = pickDoctor(text); }
+  else if(stepIndex === 4){
+    // parse date and time if present
+    const d = toDateValue(text) || plainDate();
+    const t = toTimeValue(text) || plainTime();
+    form.date = d; form.time = t;
+  }
+  stepIndex++;
+  askNext();
+}
+
+function pickDoctor(t){
+  const s = t.toLowerCase();
+  const map = {
+    "Cardiology":"cardio|heart",
+    "Orthopedics":"ortho|bone|joint|knee",
+    "Dermatology":"derma|skin|rash",
+    "Gynecology":"gyn|obst|preg",
+    "Pediatrics":"pedi|child|kid",
+    "Neurology":"neuro|brain|migraine",
+    "ENT":"ent|ear|nose|throat",
+    "General Medicine":"general|fever|cold|medicine",
+  };
+  for(const [name,rx] of Object.entries(map)){
+    if(new RegExp(rx).test(s)) return name;
+  }
+  // if a name like "Dr Sharma" appears, keep as is
+  const m = t.match(/(Dr\.?\s*[A-Za-z ]+)/i);
+  return m ? m[1] : t.trim();
+}
+
+/* very light date and time parsing */
+function toDateValue(text){
+  const str = text.toLowerCase();
+  const m = str.match(/(\d{1,2})(?:st|nd|rd|th)?\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec|january|february|march|april|june|july|august|september|october|november|december)(?:\s+(\d{4}))?/i);
+  if(!m) return '';
+  const map = {jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,sept:8,oct:9,nov:10,dec:11};
+  const day = parseInt(m[1],10);
+  const mon = map[m[2].slice(0,3)] ?? 0;
+  const yr = m[3]?parseInt(m[3],10):new Date().getFullYear();
+  const d = new Date(yr, mon, day);
+  return isNaN(d)?'':fmtDate(d);
+}
+function toTimeValue(text){
+  const m = text.toLowerCase().replace(/\./g,'').match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm|बजे)?/i);
+  if(!m) return '';
+  let h = parseInt(m[1],10), mi = m[2]?parseInt(m[2],10):0, ap=m[3];
+  if(ap && /pm/.test(ap) && h<12) h+=12;
+  if(ap && /am/.test(ap) && h===12) h=0;
+  if(h>23||mi>59) return '';
+  return `${String(h).padStart(2,'0')}:${String(mi).padStart(2,'0')}`;
+}
+function fmtDate(d){ return d.toLocaleDateString(lang==='hi'?'hi-IN':'en-IN',{year:'numeric',month:'short',day:'numeric'}); }
+function plainDate(){ const d = new Date(); return fmtDate(d); }
+function plainTime(){ const d = new Date(); return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; }
+
+function confirmBooking(){
+  const doc = form.doctor || (lang==='hi'?'डॉक्टर':'Doctor');
+  const data = {doctor:doc, date:form.date||plainDate(), time:form.time||plainTime()};
+  const text = STR.confirm(data);
+  append('bot', text);
+  speak(text);
+  $('#resultTitle').textContent = lang==='hi' ? 'अपॉइंटमेंट बुक' : 'Appointment booked';
+  $('#summary').innerHTML = `
+    <div><strong>${lang==='hi'?'समस्या':'Problem'}:</strong> ${form.problem}</div>
+    <div><strong>${lang==='hi'?'लक्षण':'Symptoms'}:</strong> ${form.symptoms}</div>
+    <div><strong>${lang==='hi'?'अवधि':'Duration'}:</strong> ${form.duration}</div>
+    <div><strong>${lang==='hi'?'डॉक्टर/विभाग':'Doctor/Dept'}:</strong> ${doc}</div>
+    <div><strong>${lang==='hi'?'दिनांक':'Date'}:</strong> ${data.date}</div>
+    <div><strong>${lang==='hi'?'समय':'Time'}:</strong> ${data.time}</div>
+  `;
+  $('#resultCard').hidden = false;
+  localStorage.setItem('voiceBooking', JSON.stringify({...form, ...data}));
+}
+
+/* ---------- speech recognition ---------- */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let rec = null, buffer = '';
+
+if(SR){
+  rec = new SR();
+  rec.lang = lang==='hi' ? 'hi-IN' : 'en-IN';
+  rec.interimResults = true;
+  rec.continuous = true;
+
+  rec.onresult = (e)=>{
+    let interim=''; 
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      const t = e.results[i][0].transcript;
+      if(e.results[i].isFinal) buffer += ' ' + t;
+      else interim += t;
+    }
+    $('#micText').textContent = interim ? `${STR.listening} ${interim}` : STR.listening;
+  };
+  rec.onend = ()=>{
+    $('#startBtn').disabled=false; $('#stopBtn').disabled=true;
+    $('#led').classList.remove('live'); $('#micText').textContent = STR.micOff;
+    const text = buffer.trim(); buffer='';
+    if(text) handleUser(text);
+  };
+  rec.onerror = ()=>{ $('#startBtn').disabled=false; $('#stopBtn').disabled=true; $('#led').classList.remove('live'); $('#micText').textContent = STR.micOff; };
+} else {
+  append('bot', lang==='hi' ? 'आपका ब्राउज़र वॉइस सपोर्ट नहीं करता।' : 'Your browser does not support voice input.');
+}
+
+$('#startBtn').onclick = ()=>{
+  try{ rec && rec.start(); }catch(e){}
+  $('#startBtn').disabled=true; $('#stopBtn').disabled=false;
+  $('#led').classList.add('live'); $('#micText').textContent = STR.listening;
+  if(stepIndex===0){ askNext(); }
+};
+$('#stopBtn').onclick = ()=>{ rec && rec.stop(); };
+
+/* ---------- start with a greeting ---------- */
+append('bot', STR.intro);
+</script>
+</body>
+</html>

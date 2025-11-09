@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>AI Chat | Aarogya-Setu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css"/>
+  <style>
+    .wrap{max-width:900px;margin:0 auto}
+    .back{display:inline-flex;gap:8px;text-decoration:none;color:var(--pink-600);font-weight:700}
+    .chat{display:flex;flex-direction:column;height:70vh;background:#fff;border:1px solid var(--pink-200);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+    .chat-log{flex:1; padding:16px; overflow:auto; background:linear-gradient(180deg,var(--pink-50),#fff)}
+    .msg{max-width:72%; margin:8px 0; padding:10px 12px; border-radius:14px; line-height:1.4; border:1px solid var(--pink-200); background:#fff}
+    .me{margin-left:auto; background:var(--pink-100)}
+    .bot{margin-right:auto}
+    .composer{display:flex; gap:8px; padding:10px; border-top:1px solid var(--pink-200); background:#fff}
+    .composer input{flex:1; padding:12px; border:1px solid var(--pink-200); border-radius:12px; background:var(--pink-50); font:inherit}
+    .btn{border:0;border-radius:12px;padding:12px 16px;font-weight:700;cursor:pointer}
+    .primary{background:var(--pink-500);color:#fff}
+  </style>
+</head>
+<body>
+<main class="container wrap">
+  <div class="topnav">
+    <a class="brand-mini" href="index.html">Aarogya-Setu</a>
+    <nav>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="patient-profile-details.html">Profile</a>
+      <a href="upload-records.html">Upload</a>
+      <a href="records-category.html">Records</a>
+      <a href="ai-chat.html">AI Chat</a>
+      <a href="booking.html">Booking</a>
+    </nav>
+  </div>
+  <a class="back" href="index.html">← Home</a>
+  <h1 class="brand">AI Chat</h1>
+  <p class="tagline">This is a demo chat UI. Wire it to your backend/LLM later.</p>
+
+  <section class="chat" role="log" aria-live="polite">
+    <div id="chatLog" class="chat-log">
+      <div class="msg bot">Hi! Ask about your records or upcoming visits.</div>
+    </div>
+    <form class="composer" onsubmit="sendMsg(event)">
+      <input id="msgInput" placeholder="Type your question..." autocomplete="off" required/>
+      <button class="btn primary" type="submit">Send</button>
+    </form>
+  </section>
+</main>
+
+<script>
+  function sendMsg(e){
+    e.preventDefault();
+    const box = document.getElementById('msgInput');
+    const text = box.value.trim();
+    if(!text) return;
+    append('me', text);
+    box.value = '';
+    // Fake reply for demo
+    setTimeout(()=> append('bot', 'This is a demo response. Connect to your AI service to get real answers.'), 450);
+  }
+  function append(role, text){
+    const log = document.getElementById('chatLog');
+    const div = document.createElement('div');
+    div.className = `msg ${role}`;
+    div.textContent = text;
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Upload Records | Aarogya-Setu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css"/>
+  <style>
+    .wrap{max-width:900px;margin:0 auto}
+    .panel{background:#fff;border:1px solid var(--pink-200);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+    .back{display:inline-flex;gap:8px;text-decoration:none;color:var(--pink-600);font-weight:700}
+    .uploader{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    label{font-size:13px;color:var(--muted)}
+    input,select,textarea{width:100%;padding:12px;border:1px solid var(--pink-200);border-radius:12px;background:var(--pink-50);font:inherit}
+    .full{grid-column:1/-1}
+    .btn{border:0;border-radius:12px;padding:12px 16px;font-weight:700;cursor:pointer}
+    .primary{background:var(--pink-500);color:#fff}
+    .list{margin-top:14px}
+    .item{background:var(--pink-50);border:1px solid var(--pink-200);border-radius:12px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+    @media (max-width:620px){ .uploader{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+<main class="container wrap">
+  <div class="topnav">
+    <a class="brand-mini" href="index.html">Aarogya-Setu</a>
+    <nav>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="patient-profile-details.html">Profile</a>
+      <a href="upload-records.html">Upload</a>
+      <a href="records-category.html">Records</a>
+      <a href="ai-chat.html">AI Chat</a>
+      <a href="booking.html">Booking</a>
+    </nav>
+  </div>
+  <a class="back" href="index.html">← Home</a>
+  <h1 class="brand">Upload Records</h1>
+  <p class="tagline">Add files to your health vault</p>
+
+  <div class="panel">
+    <form class="uploader" onsubmit="handleUpload(event)">
+      <div>
+        <label>Record Type
+          <select name="type" required>
+            <option value="">Select</option>
+            <option>Prescription</option>
+            <option>Lab Report</option>
+            <option>Discharge Summary</option>
+            <option>Imaging</option>
+            <option>Other</option>
+          </select>
+        </label>
+      </div>
+      <div>
+        <label>Date
+          <input type="date" name="date" required />
+        </label>
+      </div>
+      <div class="full">
+        <label>File
+          <input type="file" name="file" accept=".pdf,.jpg,.jpeg,.png" required />
+        </label>
+      </div>
+      <div class="full">
+        <label>Notes
+          <textarea name="notes" rows="3" placeholder="Optional notes"></textarea>
+        </label>
+      </div>
+      <div class="full">
+        <button class="btn primary" type="submit">Upload</button>
+      </div>
+    </form>
+
+    <div class="list" id="recordList"></div>
+  </div>
+</main>
+
+<script>
+  const listEl = document.getElementById('recordList');
+  const KEY = 'records';
+  const records = JSON.parse(localStorage.getItem(KEY) || '[]');
+  render();
+
+  function handleUpload(e){
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const file = fd.get('file');
+    const obj = {
+      id: Date.now(),
+      type: fd.get('type'),
+      date: fd.get('date'),
+      name: file.name,
+      notes: fd.get('notes') || ''
+    };
+    records.unshift(obj);
+    localStorage.setItem(KEY, JSON.stringify(records));
+    e.target.reset();
+    render();
+    alert('Record saved (demo). Replace with real upload later.');
+  }
+
+  function removeItem(id){
+    const idx = records.findIndex(r => r.id === id);
+    if(idx > -1){ records.splice(idx,1); localStorage.setItem(KEY, JSON.stringify(records)); render(); }
+  }
+
+  function render(){
+    if(!records.length){ listEl.innerHTML = '<p class="tagline">No records yet.</p>'; return; }
+    listEl.innerHTML = records.map(r => `
+      <div class="item">
+        <div>
+          <strong>${r.type}</strong> • <small>${r.date || 'N/A'}</small><br/>
+          <small>${r.name}</small>${r.notes ? `<div><small>${r.notes}</small></div>`:''}
+        </div>
+        <button class="btn ghost" onclick="removeItem(${r.id})">Delete</button>
+      </div>
+    `).join('');
+  }
+</script>
+</body>
+</html>

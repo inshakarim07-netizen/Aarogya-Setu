@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Doctor Profile</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css"/>
+  <style>
+    .wrap{max-width:1100px;margin:0 auto}
+    .back{display:inline-flex;gap:8px;text-decoration:none;color:var(--pink-600);font-weight:700}
+    .hero{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center}
+    .avatar{width:96px;height:96px;border-radius:20px;object-fit:cover;border:2px solid var(--pink-200);background:#fff}
+    .doc h1{margin:0;font-size:clamp(22px,3vw,30px)}
+    .meta{color:var(--muted);margin-top:4px}
+    .pill{display:inline-block;background:var(--pink-100);border:1px solid var(--pink-200);padding:6px 10px;border-radius:999px;color:var(--pink-600);font-weight:700}
+    .cta-row{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{border:0;border-radius:12px;padding:12px 16px;font-weight:700;cursor:pointer}
+    .primary{background:var(--pink-500);color:#fff}
+    .ghost{background:#fff;border:1px solid var(--pink-200);color:var(--pink-600)}
+    .grid{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-top:18px}
+    .panel{background:#fff;border:1px solid var(--pink-200);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+    .title{margin:0 0 10px}
+    .kv{display:grid;grid-template-columns:140px 1fr;gap:10px;margin:6px 0}
+    .star{color:#f4b400;font-size:18px}
+    .slot{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--pink-200);border-radius:10px;background:var(--pink-50);cursor:pointer;margin:4px 6px 0 0}
+    .slot:hover{background:#fff}
+    .list{display:grid;gap:8px}
+    .badge{display:inline-block;margin:4px 6px 0 0}
+    .review{border:1px solid var(--pink-200);background:var(--pink-50);border-radius:12px;padding:10px}
+    .map{width:100%;height:220px;border:0;border-radius:12px}
+    @media(max-width:980px){ .grid{grid-template-columns:1fr} .hero{grid-template-columns:auto 1fr} }
+  </style>
+</head>
+<body>
+<main class="container wrap">
+  <a class="back" href="home.html">← Home</a>
+
+  <!-- Header -->
+  <section class="panel">
+    <div class="hero">
+      <img class="avatar" src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?q=80&w=400&auto=format&fit=crop" alt="Doctor photo"/>
+      <div class="doc">
+        <h1 id="docName">Dr. Ravi Kumar</h1>
+        <div class="meta">
+          <span id="docDept">General Medicine</span> •
+          <span id="docExp">12 yrs experience</span> •
+          <span id="docLang">English, हिंदी</span>
+        </div>
+        <div style="margin-top:8px">
+          <span class="star">★ ★ ★ ★ ☆</span>
+          <small id="docRating">(4.3/5, 128 reviews)</small>
+        </div>
+      </div>
+      <div class="cta-row">
+        <button class="btn primary" onclick="bookQuick()">Book appointment</button>
+        <button class="btn ghost" id="favBtn" onclick="toggleFav()">♡ Save</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Body -->
+  <section class="grid">
+    <!-- Left -->
+    <div class="panel">
+      <h3 class="title">About</h3>
+      <p id="docAbout">MBBS, MD (Internal Medicine). Focus on fever, diabetes, hypertension and preventive care.</p>
+
+      <div class="kv"><strong>Clinic</strong><div id="docClinic">Aarogya Care, Sector 21, New Delhi</div></div>
+      <div class="kv"><strong>Consultation</strong><div id="docFee">₹600 (in-person) • ₹500 (video)</div></div>
+      <div class="kv"><strong>Timings</strong><div id="docTime">Mon–Sat: 10:00–14:00, 17:00–20:00</div></div>
+      <div class="kv"><strong>Contact</strong><div><a id="docPhone" href="tel:+919876543210">+91 98765 43210</a> • <a id="docWhats" href="https://wa.me/919876543210" target="_blank" rel="noopener">WhatsApp</a></div></div>
+
+      <h4 style="margin-top:14px">Services</h4>
+      <div>
+        <span class="pill badge">Fever & Infections</span>
+        <span class="pill badge">Diabetes care</span>
+        <span class="pill badge">Hypertension</span>
+        <span class="pill badge">Annual checkup</span>
+      </div>
+
+      <h4 style="margin-top:14px">Earliest slots</h4>
+      <div id="slotRow"></div>
+
+      <h4 style="margin-top:14px">Location</h4>
+      <iframe class="map" loading="lazy"
+        src="https://www.google.com/maps?q=AIIMS%2C%20New%20Delhi&output=embed" title="Clinic map"></iframe>
+    </div>
+
+    <!-- Right -->
+    <aside class="panel">
+      <h3 class="title">Qualification</h3>
+      <ul class="list" id="docQual">
+        <li>MD, Internal Medicine — AIIMS</li>
+        <li>MBBS — KGMU</li>
+        <li>Member, API</li>
+      </ul>
+
+      <h3 class="title" style="margin-top:10px">Languages</h3>
+      <div id="docLangs">
+        <span class="pill badge">English</span>
+        <span class="pill badge">हिंदी</span>
+      </div>
+
+      <h3 class="title" style="margin-top:10px">Patient reviews</h3>
+      <div class="review"><strong>Asha D.</strong><br><small>Fever</small><br>Explained clearly and started meds that worked in two days.</div>
+      <div class="review"><strong>Mohit S.</strong><br><small>BP follow-up</small><br>Helpful, short waiting time.</div>
+    </aside>
+  </section>
+</main>
+
+<script>
+  // Demo: accept data from query params (e.g., ?name=Dr.%20A.%20Sharma&dept=Cardiology)
+  const q = new URLSearchParams(location.search);
+  if(q.get('name')) document.getElementById('docName').textContent = q.get('name');
+  if(q.get('dept')) document.getElementById('docDept').textContent = q.get('dept');
+  if(q.get('exp'))  document.getElementById('docExp').textContent  = q.get('exp');
+  if(q.get('lang')) document.getElementById('docLang').textContent = q.get('lang');
+
+  // Generate next few 30-min slots today/tomorrow
+  const slotRow = document.getElementById('slotRow');
+  function makeSlots(){
+    const out=[];
+    const now = new Date();
+    const base = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 10, 0); // 10:00
+    for(let d=0; d<2; d++){
+      for(let h=10; h<=12; h++){
+        const t = new Date(base.getFullYear(), base.getMonth(), base.getDate()+d, h, 0);
+        if(t > now) out.push(t);
+      }
+      for(let h=17; h<=19; h++){
+        const t = new Date(base.getFullYear(), base.getMonth(), base.getDate()+d, h, 0);
+        if(t > now) out.push(t);
+      }
+    }
+    return out.slice(0,6);
+  }
+  function fmt(d){
+    return d.toLocaleString('en-IN',{weekday:'short',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+  }
+  function toDateVal(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+  function toTimeVal(d){ return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; }
+
+  makeSlots().forEach(s=>{
+    const a = document.createElement('button');
+    a.className='slot';
+    a.textContent = fmt(s);
+    a.onclick = ()=> goBook(toDateVal(s), toTimeVal(s));
+    slotRow.appendChild(a);
+  });
+
+  // Save/unsave doctor locally
+  const FKEY='favDoctors';
+  const favBtn=document.getElementById('favBtn');
+  const docName=()=>document.getElementById('docName').textContent;
+  function isFav(){
+    const arr=JSON.parse(localStorage.getItem(FKEY)||'[]');
+    return arr.includes(docName());
+  }
+  function renderFav(){
+    favBtn.textContent = isFav() ? '✓ Saved' : '♡ Save';
+  }
+  function toggleFav(){
+    const arr=JSON.parse(localStorage.getItem(FKEY)||'[]');
+    const i = arr.indexOf(docName());
+    if(i>-1) arr.splice(i,1); else arr.push(docName());
+    localStorage.setItem(FKEY, JSON.stringify(arr));
+    renderFav();
+  }
+  renderFav();
+
+  // Book handlers (opens your voice booking page with prefilled doctor/date/time)
+  function bookQuick(){ goBook(); }
+  function goBook(date, time){
+    const d = docName();
+    const url = new URL('assistant-booking.html', location.href);
+    url.searchParams.set('lang','en');
+    url.searchParams.set('doctor', d);
+    if(date) url.searchParams.set('date', date);
+    if(time) url.searchParams.set('time', time);
+    location.href = url.toString();
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Record Viewer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css"/>
+  <style>
+    .wrap{max-width:900px;margin:0 auto}
+    .back{display:inline-flex;gap:8px;text-decoration:none;color:var(--pink-600);font-weight:700}
+    .panel{background:#fff;border:1px solid var(--pink-200);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-top:18px}
+    .meta small{color:var(--muted)}
+    .viewer{margin-top:12px;border:1px solid var(--pink-200);border-radius:12px;overflow:hidden;background:var(--pink-50)}
+    .viewer embed,.viewer img{width:100%;height:70vh;display:block;object-fit:contain;background:#fff}
+  </style>
+</head>
+<body>
+<main class="container wrap">
+  <a class="back" href="patient-profile-details.html">← Back</a>
+  <h1 class="brand">Record</h1>
+  <div class="panel meta">
+    <div id="meta"></div>
+    <div id="viewer" class="viewer"></div>
+  </div>
+</main>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  const bucket = params.get('bucket');
+  const id = Number(params.get('id'));
+  const KEYMAP = { history:'history', prescriptions:'prescriptions', labs:'labs' };
+
+  function load(){
+    if(!KEYMAP[bucket]){ document.getElementById('meta').textContent = 'Not found.'; return; }
+    const list = JSON.parse(localStorage.getItem(KEYMAP[bucket]) || '[]');
+    const rec = list.find(r => r.id === id);
+    if(!rec){ document.getElementById('meta').textContent = 'Record not found.'; return; }
+
+    document.getElementById('meta').innerHTML = `
+      <h3>${rec.title}</h3>
+      <small>${rec.date || ''}</small>
+      ${rec.notes ? `<div><small>${rec.notes}</small></div>`:''}
+      ${rec.fileName ? `<div><small>File: ${rec.fileName}</small></div>`:''}
+    `;
+
+    const viewer = document.getElementById('viewer');
+    viewer.innerHTML = '';
+    if(rec.fileData){
+      if((rec.fileType || '').includes('pdf')){
+        const emb = document.createElement('embed');
+        emb.type = 'application/pdf';
+        emb.src = rec.fileData;
+        viewer.appendChild(emb);
+      } else if ((rec.fileType || '').startsWith('image/')){
+        const img = document.createElement('img');
+        img.src = rec.fileData;
+        viewer.appendChild(img);
+      } else {
+        viewer.innerHTML = '<div style="padding:12px">Preview not available. Download from browser save dialog if prompted.</div>';
+      }
+    } else {
+      viewer.innerHTML = '<div style="padding:12px">No file attached.</div>';
+    }
+  }
+  load();
+</script>
+</body>
+</html>

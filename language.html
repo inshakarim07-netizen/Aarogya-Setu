@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Select Language</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--pink50:#fff5f8;--pink200:#ffc9db;--pink500:#ff4d88;--pink600:#e23e78;--radius:18px}
+  *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;
+  background:radial-gradient(1000px 520px at 110% -10%,#ffe5ee,transparent 60%),var(--pink50);display:grid;place-items:center;min-height:100dvh}
+  .box{background:#fff;border:1px solid var(--pink200);border-radius:var(--radius);padding:28px;box-shadow:0 12px 32px rgba(255,105,135,.25);width:min(92vw,560px);text-align:center}
+  h1{margin:0 0 6px;color:#222} h2{margin:0 0 18px;color:#222}
+  .btn{display:block;width:100%;margin:10px 0;padding:14px;border-radius:12px;font-weight:700;border:0;background:var(--pink600);color:#fff;cursor:pointer}
+  .btn:hover{background:var(--pink500)}
+</style>
+</head>
+<body>
+  <div class="box">
+    <h1>Please select your language:</h1>
+    <h2>कृपया अपनी भाषा चुनें:</h2>
+    <button class="btn" onclick="go('en')">English</button>
+    <button class="btn" onclick="go('hi')">हिन्दी (Hindi)</button>
+  </div>
+
+<script>
+  function go(lang){ location.href = 'assistant-booking.html?lang=' + lang; }
+</script>
+</body>
+</html>

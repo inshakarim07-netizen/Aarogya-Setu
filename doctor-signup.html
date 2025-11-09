@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Doctor Sign Up | Aarogya-Setu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+  <style>
+    .form-wrap{max-width:720px;margin:0 auto;background:#fff;border:1px solid var(--pink-200);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px;}
+    .back{display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:var(--pink-600);font-weight:600;margin-bottom:16px}
+    form{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    label{font-size:13px;color:var(--muted)}
+    input,select{width:100%;padding:12px 12px;border:1px solid var(--pink-200);border-radius:12px;font:inherit;background:var(--pink-50)}
+    .full{grid-column:1 / -1}
+    .actions{display:flex;gap:10px;margin-top:6px}
+    .btn{border:0;border-radius:12px;padding:12px 16px;font-weight:700;cursor:pointer}
+    .primary{background:var(--pink-500);color:#fff}
+    .ghost{background:#fff;border:1px solid var(--pink-200);color:var(--pink-600)}
+  </style>
+</head>
+<body>
+  <main class="container">
+    <a href="./index.html" class="back" aria-label="Back to role selection">← Back</a>
+    <h1 class="brand">Doctor Sign Up</h1>
+    <p class="tagline">Create your profile to manage patients and view AI summaries.</p>
+
+    <div class="form-wrap">
+      <form onsubmit="handleSubmit(event)">
+        <div class="full">
+          <label>Full Name
+            <input type="text" name="name" required placeholder="Dr. Ravi Kumar" />
+          </label>
+        </div>
+        <div>
+          <label>Email
+            <input type="email" name="email" required placeholder="ravi@example.com" />
+          </label>
+        </div>
+        <div>
+          <label>Mobile
+            <input type="tel" name="phone" required placeholder="+91 9xxxxxxxxx" />
+          </label>
+        </div>
+        <div>
+          <label>Registration No.
+            <input type="text" name="regno" required placeholder="MCI/STATE-XXXX" />
+          </label>
+        </div>
+        <div>
+          <label>Speciality
+            <select name="speciality" required>
+              <option value="">Select</option>
+              <option>General Medicine</option>
+              <option>Pediatrics</option>
+              <option>Gynecology</option>
+              <option>Cardiology</option>
+              <option>Orthopedics</option>
+            </select>
+          </label>
+        </div>
+        <div>
+          <label>Password
+            <input type="password" name="password" minlength="6" required placeholder="Min 6 characters" />
+          </label>
+        </div>
+        <div class="actions full">
+          <button class="btn primary" type="submit">Create account</button>
+          <button class="btn ghost" type="button" onclick="demoFill()">Demo fill</button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <script>
+    function handleSubmit(e){
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(e.target).entries());
+      // Placeholder: send to your backend later
+      localStorage.setItem('doctorProfile', JSON.stringify(data));
+      alert('Doctor account created (demo). Next: wire this to your backend.');
+      location.href = 'patient-signup.html'; // temp redirect for hackathon flow
+    }
+    function demoFill(){
+      document.querySelector('[name=name]').value = 'Dr. Ravi Kumar';
+      document.querySelector('[name=email]').value = 'ravi@example.com';
+      document.querySelector('[name=phone]').value = '9876543210';
+      document.querySelector('[name=regno]').value = 'MCI-12345';
+      document.querySelector('[name=speciality]').value = 'General Medicine';
+      document.querySelector('[name=password]').value = 'secret12';
+    }
+  </script>
+</body>
+</html>

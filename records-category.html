@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Records Categories</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css"/>
+
+  <style>
+    .wrap{max-width:1100px;margin:0 auto}
+    .back{display:inline-flex;gap:8px;text-decoration:none;color:var(--pink-600);font-weight:700}
+    .grid4{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:20px;
+      margin-top:18px;
+      width:100%;
+    }
+    @media(max-width:900px){ .grid4{grid-template-columns:repeat(2,1fr);} }
+    @media(max-width:600px){ .grid4{grid-template-columns:1fr;} }
+    .emoji{font-size:48px}
+  </style>
+</head>
+
+<body>
+<main class="container wrap">
+  <div class="topnav">
+    <a class="brand-mini" href="index.html">Aarogya-Setu</a>
+    <nav>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="patient-profile-details.html">Profile</a>
+      <a href="upload-records.html">Upload</a>
+      <a href="records-category.html">Records</a>
+      <a href="ai-chat.html">AI Chat</a>
+      <a href="booking.html">Booking</a>
+    </nav>
+  </div>
+  <a class="back" href="upload-records.html">← Back</a>
+
+  <h1 class="brand">Record Categories</h1>
+  <p class="tagline">Choose a record type to view details</p>
+
+  <section class="grid4">
+
+    <!-- Blood Test -->
+    <a class="card" href="record-blood-test.html">
+      <div class="card-badge">Blood</div>
+      <div class="card-body">
+        <div class="emoji">🩸</div>
+        <h2>Blood Test</h2>
+        <p>View uploaded blood test reports.</p>
+        <span class="cta">Open</span>
+      </div>
+    </a>
+
+    <!-- X-Ray -->
+    <a class="card" href="record-xray.html">
+      <div class="card-badge">X-Ray</div>
+      <div class="card-body">
+        <div class="emoji">🦴</div>
+        <h2>X-Ray</h2>
+        <p>View and review your X-Ray scans.</p>
+        <span class="cta">Open</span>
+      </div>
+    </a>
+
+    <!-- Prescription -->
+    <a class="card" href="record-prescription.html">
+      <div class="card-badge">Rx</div>
+      <div class="card-body">
+        <div class="emoji">💊</div>
+        <h2>Prescriptions</h2>
+        <p>View current and past prescriptions.</p>
+        <span class="cta">Open</span>
+      </div>
+    </a>
+
+    <!-- ECG -->
+    <a class="card" href="record-egc.html">
+      <div class="card-badge">ECG</div>
+      <div class="card-body">
+        <div class="emoji">❤️</div>
+        <h2>ECG Reports</h2>
+        <p>View uploaded ECG recordings.</p>
+        <span class="cta">Open</span>
+      </div>
+    </a>
+
+  </section>
+
+</main>
+</body>
+</html>
