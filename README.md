@@ -26,22 +26,6 @@ A lightweight healthcare web prototype that lets patients sign up, view a dashbo
 
 ---
 
-## Project Structure
-
-/
-├─ index.html # Landing or login
-├─ patient-signup.html
-├─ doctor-signup.html
-├─ dashboard.html
-├─ doctor-profile.html # Doctor details visible to patient
-├─ upload-records.html
-├─ assets/
-│ ├─ css/ # Stylesheets
-│ ├─ img/ # Images, logos
-│ └─ js/ # Client-side JS
-├─ README.md
-└─ LICENSE
-
 Adjust the filenames if yours differ.
 
 ---
